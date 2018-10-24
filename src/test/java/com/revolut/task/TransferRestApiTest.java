@@ -10,7 +10,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Application;
 import javax.ws.rs.core.MediaType;
@@ -42,8 +41,8 @@ public class TransferRestApiTest extends JerseyTest {
      * Create 4 different accounts for testing purpose
      * and put them into the preparedAccounts map for keeping the account numbers
      */
-    @Before
-    public void prepareSomeAccounts() {
+    @Before @Test
+    public void createSomeAccounts() {
         Map<String, Account> accounts = new HashMap<>();
         accounts.put("fromAccountRur", createAccount("some owner id", 1000, Currency.RUR));
         accounts.put("toAccountRur", createAccount("some owner id", 2000, Currency.RUR));

@@ -38,7 +38,7 @@ public class TransferErrorType implements Response.StatusType {
     private final int statusCode;
     private final String reasonPhrase;
 
-    public static enum Status implements Response.StatusType {
+    public enum Status implements Response.StatusType {
         DIFFERENT_CURRENCY(430, "Currency of the accounts does not matches"),
         NOT_ENOUGH_MONEY(431, "there is not enough money in the account to complete the transaction");
 
@@ -46,7 +46,7 @@ public class TransferErrorType implements Response.StatusType {
         private final String reason;
         private final Response.Status.Family family;
 
-        private Status(int statusCode, String reasonPhrase) {
+        Status(int statusCode, String reasonPhrase) {
             this.code = statusCode;
             this.reason = reasonPhrase;
             this.family = Response.Status.Family.familyOf(statusCode);

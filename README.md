@@ -5,7 +5,7 @@ Sample RESTful API (including data model and the backing implementation) for mon
 transfers between accounts implemented in Java SE (not require a pre-installed
 container/server).
 
-For starting tests it is enough to download project and run package in maven.
+For starting tests it is enough to download project and run TEST in maven.
 Also there is possibility to run some tests directly from "src/test/java/com/revolut/task/" directory.
 There are two test classes: 
   AccountRestApiTest.java

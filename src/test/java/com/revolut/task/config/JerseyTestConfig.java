@@ -22,8 +22,8 @@ public class JerseyTestConfig {
     static {
         Handler[] handlers =
                 java.util.logging.Logger.getLogger("").getHandlers();
-        for (int index = 0; index < handlers.length; index++) {
-            handlers[index].setLevel(Level.WARNING);
+        for (Handler handler: handlers) {
+            handler.setLevel(Level.WARNING);
         }
     }
 

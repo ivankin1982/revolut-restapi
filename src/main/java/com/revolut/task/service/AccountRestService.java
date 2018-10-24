@@ -24,12 +24,13 @@ public class AccountRestService {
 
     @Context
     private UriInfo uriInfo;
-    private EntityManager em = JpaUtil.getEm();
 
     @GET
     @Path("{number}")
     public Response get(@PathParam("number") Long number) {
+        EntityManager em = JpaUtil.getEm();
         Account account = em.find(Account.class, number);
+        em.close();
         if (account == null)
             throw new NotFoundException();
         return Response.ok(account).build();
@@ -37,9 +38,11 @@ public class AccountRestService {
 
     @POST
     public Response add(Account account){
+        EntityManager em = JpaUtil.getEm();
         em.getTransaction().begin();
         em.persist(account);
         em.getTransaction().commit();
+        em.close();
         URI accountUri = uriInfo.getAbsolutePathBuilder().path(account.getNumber().toString()).build();
         return Response.created(accountUri).build();
     }
@@ -47,12 +50,16 @@ public class AccountRestService {
     @DELETE
     @Path("{number}")
     public Response delete(@PathParam("number") Long number){
+        EntityManager em = JpaUtil.getEm();
         em.getTransaction().begin();
         Account account = em.find(Account.class, number);
-        if (account == null)
+        if (account == null) {
+            em.close();
             throw new NotFoundException();
+        }
         em.remove(account);
         em.getTransaction().commit();
+        em.close();
         return Response.noContent().build();
     }
 
