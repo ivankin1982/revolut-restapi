@@ -4,6 +4,7 @@ import com.revolut.task.model.Account;
 import com.revolut.task.utils.JpaUtil;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
@@ -52,7 +53,7 @@ public class AccountRestService {
     public Response delete(@PathParam("number") Long number){
         EntityManager em = JpaUtil.getEm();
         em.getTransaction().begin();
-        Account account = em.find(Account.class, number);
+        Account account = em.find(Account.class, number, LockModeType.PESSIMISTIC_WRITE);
         if (account == null) {
             em.close();
             throw new NotFoundException();
