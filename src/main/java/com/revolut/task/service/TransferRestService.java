@@ -15,7 +15,7 @@ import com.revolut.task.utils.JpaUtil;
 
 /**
  * Created by Alexey on 21.10.2018.
- *
+ * <p>
  * Main REST API for performing transfer between existing accounts
  */
 
@@ -31,19 +31,24 @@ public class TransferRestService {
         Account fromAccount = em.find(Account.class, transfer.getFromAccount(), LockModeType.PESSIMISTIC_WRITE);
         Account toAccount = em.find(Account.class, transfer.getToAccount(), LockModeType.PESSIMISTIC_WRITE);
 
-        if (fromAccount == null || toAccount == null)
+        if (fromAccount == null || toAccount == null) {
+            em.close();
             throw new NotFoundException();
+        }
 
-        if (fromAccount.getCurrency() != toAccount.getCurrency())
-            throw new TransferException(TransferErrorType.Status.DIFFERENT_CURRENCY,"Currency of the accounts does not matches:" +
+        if (fromAccount.getCurrency() != toAccount.getCurrency()) {
+            em.close();
+            throw new TransferException(TransferErrorType.Status.DIFFERENT_CURRENCY, "Currency of the accounts does not matches:" +
                     " from " + fromAccount.getCurrency() +
                     " to " + toAccount.getCurrency());
+        }
 
-        if (fromAccount.getBalance().compareTo(transfer.getSum()) < 0)
-            throw new TransferException(TransferErrorType.Status.NOT_ENOUGH_MONEY,"there is not enough money in the account to complete the transaction");
+        if (fromAccount.getBalance().compareTo(transfer.getSum()) < 0) {
+            em.close();
+            throw new TransferException(TransferErrorType.Status.NOT_ENOUGH_MONEY, "there is not enough money in the account to complete the transaction");
+        }
 
         try {
-
             // decrease balance of the first account
             fromAccount.setBalance(fromAccount.getBalance().subtract(transfer.getSum()));
             // increase balance of the second account
