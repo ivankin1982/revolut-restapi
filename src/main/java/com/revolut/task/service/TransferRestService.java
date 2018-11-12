@@ -6,6 +6,7 @@ import com.revolut.task.model.Account;
 import com.revolut.task.model.Transfer;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
 import javax.ws.rs.*;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,8 +27,9 @@ public class TransferRestService {
     @Produces(MediaType.APPLICATION_JSON)
     public Response transfer(Transfer transfer) {
         EntityManager em = JpaUtil.getEm();
-        Account fromAccount = em.find(Account.class, transfer.getFromAccount());
-        Account toAccount = em.find(Account.class, transfer.getToAccount());
+        em.getTransaction().begin();
+        Account fromAccount = em.find(Account.class, transfer.getFromAccount(), LockModeType.PESSIMISTIC_WRITE);
+        Account toAccount = em.find(Account.class, transfer.getToAccount(), LockModeType.PESSIMISTIC_WRITE);
 
         if (fromAccount == null || toAccount == null)
             throw new NotFoundException();
@@ -41,7 +43,7 @@ public class TransferRestService {
             throw new TransferException(TransferErrorType.Status.NOT_ENOUGH_MONEY,"there is not enough money in the account to complete the transaction");
 
         try {
-            em.getTransaction().begin();
+
             // decrease balance of the first account
             fromAccount.setBalance(fromAccount.getBalance().subtract(transfer.getSum()));
             // increase balance of the second account
